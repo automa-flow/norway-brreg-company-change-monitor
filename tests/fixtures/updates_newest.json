@@ -1,0 +1,37 @@
+{
+  "_embedded": {
+    "oppdaterteEnheter": [
+      {
+        "oppdateringsid": 25175397,
+        "dato": "2026-09-08T15:10:12.049Z",
+        "organisasjonsnummer": "938443815",
+        "endringstype": "Ny",
+        "_links": {
+          "enhet": {
+            "href": "https://data.brreg.no/enhetsregisteret/api/enheter/938443815"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?page=0&size=1&sort=id,desc"
+    },
+    "self": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?size=1&sort=id,DESC"
+    },
+    "next": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?page=1&size=1&sort=id,desc"
+    },
+    "last": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?page=16409925&size=1&sort=id,desc"
+    }
+  },
+  "page": {
+    "size": 1,
+    "totalElements": 16409926,
+    "totalPages": 16409926,
+    "number": 0
+  }
+}

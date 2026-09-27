@@ -1,0 +1,100 @@
+{
+  "_embedded": {
+    "oppdaterteEnheter": [
+      {
+        "oppdateringsid": 25107591,
+        "dato": "2026-08-18T18:00:17.195Z",
+        "organisasjonsnummer": "923609016",
+        "endringstype": "Endring",
+        "endringer": [
+          {
+            "op": "replace",
+            "path": "/sisteInnsendteAarsregnskap",
+            "value": "2025"
+          }
+        ],
+        "_links": {
+          "enhet": {
+            "href": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016"
+          }
+        }
+      },
+      {
+        "oppdateringsid": 25083754,
+        "dato": "2026-08-12T22:05:42.092Z",
+        "organisasjonsnummer": "984851006",
+        "endringstype": "Endring",
+        "endringer": [
+          {
+            "op": "replace",
+            "path": "/registreringsdatoAntallAnsatteEnhetsregisteret",
+            "value": "2026-08-12"
+          },
+          {
+            "op": "replace",
+            "path": "/antallAnsatte",
+            "value": 7488
+          },
+          {
+            "op": "replace",
+            "path": "/registreringsdatoAntallAnsatteNAVAaregisteret",
+            "value": "2026-08-10"
+          }
+        ],
+        "_links": {
+          "enhet": {
+            "href": "https://data.brreg.no/enhetsregisteret/api/enheter/984851006"
+          }
+        }
+      },
+      {
+        "oppdateringsid": 25067148,
+        "dato": "2026-08-12T22:01:52.644Z",
+        "organisasjonsnummer": "923609016",
+        "endringstype": "Endring",
+        "endringer": [
+          {
+            "op": "replace",
+            "path": "/registreringsdatoAntallAnsatteEnhetsregisteret",
+            "value": "2026-08-12"
+          },
+          {
+            "op": "replace",
+            "path": "/antallAnsatte",
+            "value": 21239
+          },
+          {
+            "op": "replace",
+            "path": "/registreringsdatoAntallAnsatteNAVAaregisteret",
+            "value": "2026-08-10"
+          }
+        ],
+        "_links": {
+          "enhet": {
+            "href": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?organisasjonsnummer=923609016,984851006&oppdateringsid=1&includeChanges=true&page=0&size=3&sort=id,desc"
+    },
+    "self": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?organisasjonsnummer=923609016,984851006&oppdateringsid=1&sort=id,DESC&size=3&includeChanges=true"
+    },
+    "next": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?organisasjonsnummer=923609016,984851006&oppdateringsid=1&includeChanges=true&page=1&size=3&sort=id,desc"
+    },
+    "last": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?organisasjonsnummer=923609016,984851006&oppdateringsid=1&includeChanges=true&page=99&size=3&sort=id,desc"
+    }
+  },
+  "page": {
+    "size": 3,
+    "totalElements": 300,
+    "totalPages": 100,
+    "number": 0
+  }
+}

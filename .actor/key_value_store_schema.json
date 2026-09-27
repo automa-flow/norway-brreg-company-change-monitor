@@ -1,0 +1,85 @@
+{
+  "actorKeyValueStoreSchemaVersion": 1,
+  "title": "Norway BRREG company change monitor run metadata",
+  "description": "Run outcomes, update-cursor movement, source request counters, change tallies and billing.",
+  "collections": {
+    "runSummary": {
+      "title": "Run summary",
+      "key": "RUN_SUMMARY",
+      "contentTypes": ["application/json"],
+      "jsonSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "watchlist_size", "valid_targets", "invalid_targets", "duplicate_targets",
+          "baseline_targets", "update_chunks", "update_pages", "source_requests",
+          "source_retries", "source_events", "refetched_targets", "changed_targets",
+          "not_found_targets", "removed_targets", "failed_targets", "partial_targets",
+          "skipped_targets", "budget_limit_reached", "baseline_rows", "change_rows",
+          "snapshot_rows", "not_found_rows", "unchanged", "emitted_records", "change_types",
+          "source_disagreements", "cursor_before", "cursor_after", "cursor_advanced",
+          "state_updates", "state_updated", "billable_targets", "source_protocol_changed",
+          "pass_failure", "monitor_key", "mode", "baseline_mode", "duration_ms"
+        ],
+        "properties": {
+          "watchlist_size": { "type": "integer", "minimum": 0 },
+          "valid_targets": { "type": "integer", "minimum": 0 },
+          "invalid_targets": { "type": "integer", "minimum": 0 },
+          "duplicate_targets": { "type": "integer", "minimum": 0 },
+          "baseline_targets": { "type": "integer", "minimum": 0 },
+          "update_chunks": { "type": "integer", "minimum": 0 },
+          "update_pages": { "type": "integer", "minimum": 0 },
+          "source_requests": { "type": "integer", "minimum": 0 },
+          "source_retries": { "type": "integer", "minimum": 0 },
+          "source_events": { "type": "integer", "minimum": 0 },
+          "refetched_targets": { "type": "integer", "minimum": 0 },
+          "changed_targets": { "type": "integer", "minimum": 0 },
+          "not_found_targets": { "type": "integer", "minimum": 0 },
+          "removed_targets": { "type": "integer", "minimum": 0 },
+          "failed_targets": { "type": "integer", "minimum": 0 },
+          "partial_targets": { "type": "integer", "minimum": 0 },
+          "skipped_targets": { "type": "integer", "minimum": 0 },
+          "budget_limit_reached": { "type": "boolean" },
+          "baseline_rows": { "type": "integer", "minimum": 0 },
+          "change_rows": { "type": "integer", "minimum": 0 },
+          "snapshot_rows": { "type": "integer", "minimum": 0 },
+          "not_found_rows": { "type": "integer", "minimum": 0 },
+          "unchanged": { "type": "integer", "minimum": 0 },
+          "emitted_records": { "type": "integer", "minimum": 0 },
+          "change_types": { "type": "object" },
+          "source_disagreements": { "type": "integer", "minimum": 0 },
+          "cursor_before": { "type": ["integer", "null"], "minimum": 0 },
+          "cursor_after": { "type": ["integer", "null"], "minimum": 0 },
+          "cursor_advanced": { "type": "boolean" },
+          "state_updates": { "type": "integer", "minimum": 0 },
+          "state_updated": { "type": "boolean" },
+          "billable_targets": { "type": "integer", "minimum": 0 },
+          "charged_targets": { "type": "integer", "minimum": 0 },
+          "source_protocol_changed": { "type": "boolean" },
+          "pass_failure": { "type": ["string", "null"] },
+          "monitor_key": { "type": "string" },
+          "mode": { "type": "string", "enum": ["changesOnly", "snapshotAndChanges"] },
+          "baseline_mode": { "type": "string", "enum": ["emitSnapshot", "storeOnly"] },
+          "duration_ms": { "type": "integer", "minimum": 0 },
+          "recovery_only": { "type": "boolean" },
+          "recovered_from_run_id": { "type": ["string", "null"] },
+          "run_metrics": { "type": "object" },
+          "operational": { "type": "object" }
+        }
+      }
+    },
+    "deliveryCheckpoint": {
+      "title": "Delivery checkpoint",
+      "key": "DELIVERY_CHECKPOINT",
+      "contentTypes": ["application/json"],
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "version": { "type": "integer" },
+          "phase": { "type": "string", "enum": ["PUBLISHING", "COMPLETE"] }
+        },
+        "required": ["version", "phase"]
+      }
+    }
+  }
+}

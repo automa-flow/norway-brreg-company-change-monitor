@@ -1,0 +1,35 @@
+{
+  "company-monitored": {
+    "eventTitle": "Company monitored",
+    "eventDescription": "Charged once per unique organization number covered by a completed monitoring pass, whether it changed, stayed exactly the same, or is confirmed absent from the register. An organization listed twice is charged once. Invalid organization numbers, internal retries, failed or incomplete update intervals, unreadable records, records the official patch contradicts, recovery-only delivery, replayed update events and organizations beyond the run's charge limit are never charged.",
+    "isPrimaryEvent": true,
+    "isOneTimeEvent": false,
+    "eventTieredPricingUsd": {
+      "FREE": {
+        "tieredEventPriceUsd": 0.0005
+      },
+      "BRONZE": {
+        "tieredEventPriceUsd": 0.0005
+      },
+      "SILVER": {
+        "tieredEventPriceUsd": 0.00045
+      },
+      "GOLD": {
+        "tieredEventPriceUsd": 0.0004
+      },
+      "PLATINUM": {
+        "tieredEventPriceUsd": 0.0004
+      },
+      "DIAMOND": {
+        "tieredEventPriceUsd": 0.0004
+      }
+    }
+  },
+  "apify-actor-start": {
+    "eventTitle": "Actor Start",
+    "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+    "eventPriceUsd": 0.005,
+    "isPrimaryEvent": false,
+    "isOneTimeEvent": true
+  }
+}

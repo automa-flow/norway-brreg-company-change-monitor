@@ -1,0 +1,30 @@
+{
+  "actId": "17azrDNwIaI4q4UaP",
+  "isPublic": false,
+  "name": "export-norway-company-registry-data-for-crm",
+  "title": "Export Norway Company Registry Data for CRM",
+  "description": "Read Norwegian company records from BRREG Enhetsregisteret. Replace the sample organization numbers with your own nine-digit IDs and keep one monitorKey per list. Each run returns current company records for CRM import, with VAT and bankruptcy flags and explicit statuses for unverified checks.",
+  "input": {
+    "organizationNumbers": ["923609016", "984851006", "810034882"],
+    "monitorKey": "crm-company-records-no",
+    "mode": "snapshotAndChanges",
+    "baselineMode": "emitSnapshot",
+    "includeSourcePatch": false
+  },
+  "options": {
+    "build": "latest",
+    "memoryMbytes": 512,
+    "timeoutSecs": 300,
+    "restartOnError": false,
+    "maxItems": null,
+    "maxTotalChargeUsd": 0.11
+  },
+  "publicConfig": {
+    "seoTitle": "Export Norway Company Registry Data for CRM",
+    "seoDescription": "Export Norwegian company records from BRREG by organization number for CRM import, including legal name, VAT registration and bankruptcy status.",
+    "inputSchemaFields": ["organizationNumbers", "monitorKey"],
+    "datasetName": null,
+    "datasetView": "current",
+    "publishedAt": null
+  }
+}

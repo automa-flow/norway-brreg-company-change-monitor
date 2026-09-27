@@ -1,0 +1,38 @@
+{
+  "_embedded": {
+    "oppdaterteEnheter": [
+      {
+        "oppdateringsid": 25165743,
+        "dato": "2026-09-05T15:00:31.809Z",
+        "organisasjonsnummer": "917549249",
+        "endringstype": "Sletting",
+        "_links": {"enhet": {"href": "https://data.brreg.no/enhetsregisteret/api/enheter/917549249"}}
+      },
+      {
+        "oppdateringsid": 25165745,
+        "dato": "2026-09-05T15:00:31.809Z",
+        "organisasjonsnummer": "938282382",
+        "endringstype": "Ny",
+        "_links": {"enhet": {"href": "https://data.brreg.no/enhetsregisteret/api/enheter/938282382"}}
+      },
+      {
+        "oppdateringsid": 25166125,
+        "dato": "2026-09-05T15:00:59.257Z",
+        "organisasjonsnummer": "936127088",
+        "endringstype": "Fjernet",
+        "_links": {"enhet": {"href": "https://data.brreg.no/enhetsregisteret/api/enheter/936127088"}}
+      },
+      {
+        "oppdateringsid": 25166200,
+        "dato": "2026-09-05T15:01:12.100Z",
+        "organisasjonsnummer": "923609016",
+        "endringstype": "Ukjent",
+        "_links": {"enhet": {"href": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016"}}
+      }
+    ]
+  },
+  "_links": {
+    "self": {"href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter"}
+  },
+  "page": {"size": 1000, "totalElements": 4, "totalPages": 1, "number": 0}
+}

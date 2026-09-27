@@ -1,0 +1,30 @@
+{
+  "actId": "17azrDNwIaI4q4UaP",
+  "isPublic": false,
+  "name": "overvak-endringer-hos-norske-leverandorer-i-brreg",
+  "title": "Overvåk endringer hos norske leverandører i BRREG",
+  "description": "Følg norske leverandører i BRREG Enhetsregisteret. Bytt ut eksemplene med egne nisifrede organisasjonsnumre, og behold samme monitorKey for listen. Første kjøring viser utgangspunktet; senere kjøringer gir endringer og eventuelle feilmeldinger. Ingen endringer kan gi et tomt datasett.",
+  "input": {
+    "organizationNumbers": ["923609016", "984851006", "810034882"],
+    "monitorKey": "eksempel-leverandorer-brreg",
+    "mode": "changesOnly",
+    "baselineMode": "emitSnapshot",
+    "includeSourcePatch": true
+  },
+  "options": {
+    "build": "latest",
+    "memoryMbytes": 512,
+    "timeoutSecs": 300,
+    "restartOnError": false,
+    "maxItems": null,
+    "maxTotalChargeUsd": 0.11
+  },
+  "publicConfig": {
+    "seoTitle": "Overvåk endringer hos norske leverandører i BRREG",
+    "seoDescription": "Overvåk norske leverandører etter organisasjonsnummer. Se endringer i navn, MVA-registrering og konkursstatus i BRREG mellom kjøringer.",
+    "inputSchemaFields": ["organizationNumbers", "monitorKey"],
+    "datasetName": null,
+    "datasetView": "monitoring",
+    "publishedAt": null
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Norway Company Registry Change Monitor - BRREG",
+  "description": "Monitor Norwegian companies by organization number in BRREG Enhetsregisteret. Track supplier name, VAT, bankruptcy, liquidation, industry and address changes across runs. Export current records and typed changes as JSON, CSV or Excel for recurring workflows.",
+  "categories": [
+    "BUSINESS",
+    "AUTOMATION",
+    "DEVELOPER_TOOLS"
+  ],
+  "seoTitle": "Norway Company Registry Change Monitor - BRREG",
+  "seoDescription": "Monitor Norwegian organization numbers in BRREG. Typed changes for name, address, industry, VAT, bankruptcy, liquidation and share capital.",
+  "pricingModel": "PAY_PER_EVENT",
+  "minimalMaxTotalChargeUsd": 0.01
+}

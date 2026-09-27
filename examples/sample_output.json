@@ -1,0 +1,156 @@
+[
+  {
+    "record_type": "CHANGE",
+    "status": "SUCCESS",
+    "monitor_key": "suppliers-no",
+    "organization_number": "923609016",
+    "submitted_organization_number": "923609016",
+    "company_name": "EQUINOR NORGE ASA",
+    "event_id": 25175412,
+    "event_ids": [
+      25175412
+    ],
+    "event_published_at": "2026-09-08T05:00:11.402Z",
+    "source_change_type": "ENTITY_CHANGED",
+    "source_change_types": [
+      "ENTITY_CHANGED"
+    ],
+    "change_types": [
+      "NAME_CHANGED",
+      "VAT_STATUS_CHANGED",
+      "LIQUIDATION_STATUS_CHANGED",
+      "OTHER_CHANGED"
+    ],
+    "changes": {
+      "name": {
+        "previous": "EQUINOR ASA",
+        "current": "EQUINOR NORGE ASA"
+      },
+      "vat_registered": {
+        "previous": true,
+        "current": false
+      },
+      "under_liquidation": {
+        "previous": false,
+        "current": true
+      }
+    },
+    "patch_change_types": [
+      "NAME_CHANGED",
+      "LIQUIDATION_STATUS_CHANGED",
+      "VAT_STATUS_CHANGED",
+      "OTHER_CHANGED"
+    ],
+    "source_patch": [
+      {
+        "op": "replace",
+        "path": "/navn",
+        "value": "EQUINOR NORGE ASA"
+      },
+      {
+        "op": "replace",
+        "path": "/underAvvikling",
+        "value": true
+      },
+      {
+        "op": "replace",
+        "path": "/registrertIMvaregisteret",
+        "value": false
+      },
+      {
+        "op": "replace",
+        "path": "/epostadresse",
+        "value_redacted": true
+      }
+    ],
+    "source_patch_truncated": false,
+    "current": {
+      "organization_number": "923609016",
+      "found": true,
+      "deleted": false,
+      "name": "EQUINOR NORGE ASA",
+      "organization_form_code": "ASA",
+      "industry_code_1": "06.100",
+      "industry_code_2": "06.200",
+      "industry_code_3": "19.200",
+      "employees": 21239,
+      "vat_registered": false,
+      "bankrupt": false,
+      "under_liquidation": true,
+      "forced_liquidation_or_dissolution": false,
+      "part_of_group": true,
+      "share_capital_amount": 5976872600.0,
+      "share_capital_currency": "NOK",
+      "business_address_city": "STAVANGER",
+      "business_address_municipality_code": "1103",
+      "postal_address_city": "STAVANGER",
+      "postal_address_municipality_code": "1103",
+      "registration_date": "1995-03-12",
+      "deletion_date": null,
+      "organization_form_description": "Allmennaksjeselskap",
+      "source_url": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016",
+      "schema_version": 1,
+      "fingerprint": "5de9a1afe3c00710551696da39c1bbb715292734a21014244654568d95da8801"
+    },
+    "source": "no_brreg_enhetsregisteret",
+    "source_id": "brreg-update:25175412",
+    "source_url": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016",
+    "scraped_at": "2026-09-08T06:05:00Z",
+    "schema_version": 1,
+    "fingerprint": "5de9a1afe3c00710551696da39c1bbb715292734a21014244654568d95da8801",
+    "error": null
+  },
+  {
+    "record_type": "NOT_FOUND",
+    "status": "NOT_FOUND",
+    "monitor_key": "suppliers-no",
+    "organization_number": "810864402",
+    "submitted_organization_number": "810864402",
+    "company_name": null,
+    "event_id": null,
+    "event_ids": [],
+    "event_published_at": null,
+    "source_change_type": null,
+    "source_change_types": [],
+    "change_types": [],
+    "changes": {},
+    "patch_change_types": [],
+    "source_patch": [],
+    "source_patch_truncated": false,
+    "current": {
+      "organization_number": "810864402",
+      "found": false,
+      "deleted": false,
+      "name": null,
+      "organization_form_code": null,
+      "industry_code_1": null,
+      "industry_code_2": null,
+      "industry_code_3": null,
+      "employees": null,
+      "vat_registered": null,
+      "bankrupt": null,
+      "under_liquidation": null,
+      "forced_liquidation_or_dissolution": null,
+      "part_of_group": null,
+      "share_capital_amount": null,
+      "share_capital_currency": null,
+      "business_address_city": null,
+      "business_address_municipality_code": null,
+      "postal_address_city": null,
+      "postal_address_municipality_code": null,
+      "registration_date": null,
+      "deletion_date": null,
+      "organization_form_description": null,
+      "source_url": "https://data.brreg.no/enhetsregisteret/api/enheter/810864402",
+      "schema_version": 1,
+      "fingerprint": "39dedaf7d9c2ba5e66d829272faec9f93538b50269dc670af721794be425a773"
+    },
+    "source": "no_brreg_enhetsregisteret",
+    "source_id": "brreg-entity:810864402",
+    "source_url": "https://data.brreg.no/enhetsregisteret/api/enheter/810864402",
+    "scraped_at": "2026-09-08T06:05:00Z",
+    "schema_version": 1,
+    "fingerprint": "39dedaf7d9c2ba5e66d829272faec9f93538b50269dc670af721794be425a773",
+    "error": null
+  }
+]

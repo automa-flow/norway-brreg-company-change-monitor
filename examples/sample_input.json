@@ -1,0 +1,11 @@
+{
+  "organizationNumbers": [
+    "923609016",
+    "984851006",
+    "810034882"
+  ],
+  "monitorKey": "suppliers-no",
+  "mode": "snapshotAndChanges",
+  "baselineMode": "emitSnapshot",
+  "includeSourcePatch": true
+}

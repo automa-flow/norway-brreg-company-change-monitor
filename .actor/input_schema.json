@@ -1,0 +1,78 @@
+{
+  "title": "Norway Company Registry Change Monitor - BRREG",
+  "description": "Watch 1-5,000 Norwegian organization numbers in the official BRREG Enhetsregisteret. The first run stores a baseline; every run after that reads BRREG's own update stream and returns only the companies that actually changed.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "organizationNumbers": {
+      "title": "Watchlist (organization numbers)",
+      "type": "array",
+      "description": "One Norwegian organization number per entry: exactly 9 digits. Spaces, dots and dashes are removed, and an invoice-style NO...MVA wrapper is stripped, so 923609016, 923 609 016 and NO 923 609 016 MVA are the same company. A repeated number is monitored, charged and compared once.",
+      "editor": "stringList",
+      "minItems": 1,
+      "maxItems": 5000,
+      "prefill": [
+        "923609016",
+        "984851006",
+        "810034882"
+      ],
+      "example": [
+        "923609016",
+        "NO 984 851 006 MVA",
+        "810-034-882"
+      ]
+    },
+    "monitorKey": {
+      "title": "Monitor key",
+      "type": "string",
+      "description": "Names the stored baseline and update cursor this run compares against. Use one key per watchlist (for example suppliers-no). Changing it starts a fresh baseline. Two runs sharing a key never run at the same time; the second waits or fails rather than corrupting the cursor.",
+      "editor": "textfield",
+      "default": "default",
+      "prefill": "suppliers-no",
+      "pattern": "^[A-Za-z0-9_-]{1,80}$",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "mode": {
+      "title": "What to return",
+      "type": "string",
+      "description": "changesOnly returns the first-run baseline and, after that, only companies whose official record changed. snapshotAndChanges also returns every unchanged company's current record from stored state, without re-fetching it. Both modes monitor every company, and diagnostics for failed or rejected entries are always returned.",
+      "editor": "select",
+      "enum": [
+        "changesOnly",
+        "snapshotAndChanges"
+      ],
+      "enumTitles": [
+        "Changes only (recommended for schedules)",
+        "Current record for every company"
+      ],
+      "default": "changesOnly",
+      "prefill": "snapshotAndChanges"
+    },
+    "baselineMode": {
+      "title": "First run under a monitor key",
+      "type": "string",
+      "description": "emitSnapshot returns every company's current record on the first run. storeOnly saves the baseline silently, so the first scheduled alert is a real change rather than a full export.",
+      "editor": "select",
+      "enum": [
+        "emitSnapshot",
+        "storeOnly"
+      ],
+      "enumTitles": [
+        "Return the current record",
+        "Store the baseline silently"
+      ],
+      "default": "emitSnapshot"
+    },
+    "includeSourcePatch": {
+      "title": "Include BRREG's own change operations",
+      "type": "boolean",
+      "description": "Attaches up to 200 official endringer operations as evidence. Classification uses the full patch. Contact and street values are redacted; address objects retain city and municipality code only. The paths remain visible. source_patch_truncated marks a shortened patch.",
+      "editor": "checkbox",
+      "default": true
+    }
+  },
+  "required": [
+    "organizationNumbers"
+  ]
+}

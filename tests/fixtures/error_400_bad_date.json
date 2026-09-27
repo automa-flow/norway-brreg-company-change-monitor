@@ -1,0 +1,16 @@
+{
+  "tidsstempel": 1788880687872,
+  "status": 400,
+  "feilmelding": "Feilaktig forespørsel",
+  "valideringsfeil": [
+    {
+      "feilmelding": "Dato må være en gyldig dato og på formatet yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      "parametere": [
+        "updatedBefore"
+      ],
+      "feilaktigVerdi": "2026-08-13"
+    }
+  ],
+  "sti": "/enhetsregisteret/api/oppdateringer/enheter",
+  "antallFeil": 1
+}

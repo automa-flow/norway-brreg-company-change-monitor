@@ -1,0 +1,32 @@
+{
+  "organisasjonsnummer": "981276957",
+  "navn": "DNB ASA",
+  "organisasjonsform": {
+    "kode": "ASA",
+    "beskrivelse": "Allmennaksjeselskap",
+    "_links": {
+      "self": {
+        "href": "https://data.brreg.no/enhetsregisteret/api/organisasjonsformer/ASA"
+      }
+    }
+  },
+  "historiskeNavn": [
+    {
+      "navn": "DNB HOLDING ASA",
+      "fraDato": "1999-11-18 18:36:09",
+      "tilDato": "2003-12-04 09:36:30"
+    },
+    {
+      "navn": "DNB NOR ASA",
+      "fraDato": "2003-12-04 09:36:30",
+      "tilDato": "2011-11-11 08:20:10"
+    }
+  ],
+  "slettedato": "2021-07-01",
+  "_links": {
+    "self": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/enheter/981276957"
+    }
+  },
+  "respons_klasse": "SlettetEnhet"
+}

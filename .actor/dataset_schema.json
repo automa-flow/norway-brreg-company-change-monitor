@@ -1,0 +1,580 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+      "record_type",
+      "status",
+      "monitor_key",
+      "organization_number",
+      "submitted_organization_number",
+      "company_name",
+      "event_id",
+      "event_ids",
+      "event_published_at",
+      "source_change_type",
+      "source_change_types",
+      "change_types",
+      "changes",
+      "patch_change_types",
+      "source_patch",
+      "current",
+      "source",
+      "source_id",
+      "source_url",
+      "scraped_at",
+      "schema_version",
+      "fingerprint",
+      "error"
+    ],
+    "properties": {
+      "record_type": {
+        "type": "string",
+        "enum": [
+          "BASELINE",
+          "CHANGE",
+          "SNAPSHOT",
+          "NOT_FOUND",
+          "REMOVED",
+          "ERROR"
+        ],
+        "title": "Record type",
+        "description": "BASELINE is the first stored observation for this organization under this monitor key. CHANGE carries a non-empty change_types. SNAPSHOT is an unchanged current record. NOT_FOUND is an authoritative absence from the register. REMOVED means BRREG answered HTTP 410 Gone and the cached record was purged. ERROR is rejected input or source work that was not verified - never an observation of a company."
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "SUCCESS",
+          "NOT_FOUND",
+          "PARTIAL",
+          "SOURCE_FAILED",
+          "INVALID_INPUT",
+          "SKIPPED"
+        ],
+        "title": "Per-organization status",
+        "description": "SUCCESS and NOT_FOUND are conclusive and billable. PARTIAL includes the fetched record and contradictory source evidence; its stored snapshot and the cursor are preserved for retry. SOURCE_FAILED means the register could not be verified. SKIPPED means the charge limit could not fund monitoring. SOURCE_FAILED and SKIPPED carry no current record. Diagnostics are always emitted."
+      },
+      "monitor_key": {
+        "type": "string",
+        "title": "Monitor key",
+        "description": "The baseline and cursor namespace this row was compared within."
+      },
+      "organization_number": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Organization number",
+        "description": "Normalized nine-digit Norwegian organization number, exactly as sent to BRREG. Null only on a rejected input row."
+      },
+      "submitted_organization_number": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Submitted value",
+        "description": "What the watchlist entry contained, echoed back so a row joins to the caller's own list."
+      },
+      "company_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Company name",
+        "description": "The registered name in the observed record, including a disputed PARTIAL observation. Null when no current record is available."
+      },
+      "event_id": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "title": "Update event id",
+        "description": "BRREG oppdateringsid of the last update event in this interval for this organization. Null on a baseline and on an unchanged row."
+      },
+      "event_ids": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "title": "All update event ids",
+        "description": "Every BRREG update event this interval reported for this organization, ascending. One row reconciles them all to one final record."
+      },
+      "event_published_at": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Event timestamp",
+        "description": "BRREG dato of the last update event, in UTC."
+      },
+      "source_change_type": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Source change type",
+        "description": "BRREG's own endringstype for the last event, mapped one to one: Ny, Endring, Sletting and Fjernet. Ukjent and anything BRREG adds later become UNKNOWN_SOURCE_CHANGE rather than being guessed at."
+      },
+      "source_change_types": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "ENTITY_ADDED",
+            "ENTITY_CHANGED",
+            "ENTITY_DELETED",
+            "REMOVED_FROM_OPEN_DATA",
+            "UNKNOWN_SOURCE_CHANGE"
+          ]
+        },
+        "title": "All source change types",
+        "description": "Every distinct BRREG event type seen for this organization in this interval."
+      },
+      "change_types": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "NAME_CHANGED",
+            "LEGAL_FORM_CHANGED",
+            "ADDRESS_CHANGED",
+            "INDUSTRY_CHANGED",
+            "EMPLOYEE_COUNT_CHANGED",
+            "VAT_STATUS_CHANGED",
+            "BANKRUPTCY_STATUS_CHANGED",
+            "LIQUIDATION_STATUS_CHANGED",
+            "GROUP_STATUS_CHANGED",
+            "SHARE_CAPITAL_CHANGED",
+            "REGISTRATION_DATA_CHANGED",
+            "DELETION_STATUS_CHANGED",
+            "OTHER_CHANGED"
+          ]
+        },
+        "title": "Typed changes",
+        "description": "Typed normalized differences, plus OTHER_CHANGED for fresh source operations outside exact normalized field paths. OTHER_CHANGED is source evidence and does not invent before/after values. Empty on a baseline and on an unchanged row."
+      },
+      "changes": {
+        "type": "object",
+        "title": "Before and after",
+        "description": "One entry per normalized field that moved, each with previous and current."
+      },
+      "patch_change_types": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "NAME_CHANGED",
+            "LEGAL_FORM_CHANGED",
+            "ADDRESS_CHANGED",
+            "INDUSTRY_CHANGED",
+            "EMPLOYEE_COUNT_CHANGED",
+            "VAT_STATUS_CHANGED",
+            "BANKRUPTCY_STATUS_CHANGED",
+            "LIQUIDATION_STATUS_CHANGED",
+            "GROUP_STATUS_CHANGED",
+            "SHARE_CAPITAL_CHANGED",
+            "REGISTRATION_DATA_CHANGED",
+            "DELETION_STATUS_CHANGED",
+            "OTHER_CHANGED"
+          ]
+        },
+        "title": "Types claimed by the source patch",
+        "description": "What the BRREG endringer paths claim changed. Evidence only; change_types is the contract. A path this Actor does not normalize is OTHER_CHANGED."
+      },
+      "source_patch": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        },
+        "title": "Official BRREG change operations",
+        "description": "Up to 200 endringer operations. Contact and street values are redacted; whole address objects retain city and municipality code only. value_redacted marks a minimized value. Empty when includeSourcePatch is off, and for source events without a patch."
+      },
+      "source_patch_truncated": {
+        "type": "boolean",
+        "title": "Source patch shortened",
+        "description": "True when the published patch contains only the first 200 operations. Classification and disagreement checks always use the full patch."
+      },
+      "current": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "title": "Current record",
+        "description": "The normalized record, including the disputed fetched record on a PARTIAL row. Null for failed, skipped or invalid entries. Contains only monitored fields: no roles, officers, beneficial owners, e-mail, telephone or street lines.",
+        "properties": {
+          "organization_number": {
+            "type": "string"
+          },
+          "found": {
+            "type": "boolean"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "organization_form_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "organization_form_description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "industry_code_1": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "industry_code_2": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "industry_code_3": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "employees": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "vat_registered": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "bankrupt": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "under_liquidation": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "forced_liquidation_or_dissolution": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "part_of_group": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "share_capital_amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "share_capital_currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "business_address_city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "business_address_municipality_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "postal_address_city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "postal_address_municipality_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "registration_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "deletion_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_url": {
+            "type": "string"
+          },
+          "schema_version": {
+            "type": "integer"
+          },
+          "fingerprint": {
+            "type": "string"
+          }
+        }
+      },
+      "source": {
+        "type": "string",
+        "title": "Source",
+        "description": "Always no_brreg_enhetsregisteret."
+      },
+      "source_id": {
+        "type": "string",
+        "title": "Source id",
+        "description": "brreg-update:<oppdateringsid> on a row driven by an update event, brreg-entity:<organization number> otherwise. Stable across runs, so rows can be joined to their own past."
+      },
+      "source_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Source URL",
+        "description": "The official BRREG record this observation came from."
+      },
+      "scraped_at": {
+        "type": "string",
+        "title": "Observed at",
+        "description": "UTC ISO-8601 instant this run observed the register. Rows are append-only facts about that moment, not the current state forever."
+      },
+      "schema_version": {
+        "type": "integer",
+        "title": "Schema version"
+      },
+      "fingerprint": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Fingerprint",
+        "description": "SHA-256 over the normalized semantic fields only, excluding scraped_at and run metadata. Equal fingerprints mean nothing changed."
+      },
+      "error": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "title": "Diagnostic",
+        "description": "Category, code, message and whether retrying is worthwhile. Null on a successful observation."
+      }
+    }
+  },
+  "views": {
+    "changes": {
+      "title": "Changes",
+      "description": "One row per typed change. Baselines, unchanged records and diagnostics are omitted by the unwind.",
+      "transformation": {
+        "unwind": [
+          "change_types"
+        ],
+        "fields": [
+          "scraped_at",
+          "organization_number",
+          "company_name",
+          "change_types",
+          "source_change_type",
+          "changes",
+          "event_id",
+          "event_published_at",
+          "source_url"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "scraped_at": {
+            "label": "Observed"
+          },
+          "organization_number": {
+            "label": "Org. number"
+          },
+          "company_name": {
+            "label": "Company"
+          },
+          "change_types": {
+            "label": "Change"
+          },
+          "source_change_type": {
+            "label": "BRREG event"
+          },
+          "changes": {
+            "label": "Before / after"
+          },
+          "event_id": {
+            "label": "Update id"
+          },
+          "event_published_at": {
+            "label": "Event time"
+          },
+          "source_url": {
+            "label": "Official record"
+          }
+        }
+      }
+    },
+    "current": {
+      "title": "Current / baseline",
+      "description": "The record each row carries. In changesOnly, unchanged organizations are suppressed by the selected mode.",
+      "transformation": {
+        "fields": [
+          "record_type",
+          "status",
+          "organization_number",
+          "company_name",
+          "current",
+          "fingerprint",
+          "scraped_at",
+          "source_url"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "record_type": {
+            "label": "Row"
+          },
+          "status": {
+            "label": "Status"
+          },
+          "organization_number": {
+            "label": "Org. number"
+          },
+          "company_name": {
+            "label": "Company"
+          },
+          "current": {
+            "label": "Record"
+          },
+          "fingerprint": {
+            "label": "Fingerprint"
+          },
+          "scraped_at": {
+            "label": "Observed"
+          },
+          "source_url": {
+            "label": "Official record"
+          }
+        }
+      }
+    },
+    "diagnostics": {
+      "title": "Not found / partial",
+      "description": "Failure-focused columns for every row; filter on status client-side.",
+      "transformation": {
+        "fields": [
+          "status",
+          "record_type",
+          "organization_number",
+          "submitted_organization_number",
+          "error",
+          "scraped_at"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "status": {
+            "label": "Status"
+          },
+          "record_type": {
+            "label": "Row"
+          },
+          "organization_number": {
+            "label": "Org. number"
+          },
+          "submitted_organization_number": {
+            "label": "Submitted"
+          },
+          "error": {
+            "label": "Diagnostic"
+          },
+          "scraped_at": {
+            "label": "Observed"
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "title": "Monitor results and diagnostics",
+      "description": "Every emitted row without unwinding. Unchanged records may be suppressed by the selected mode.",
+      "transformation": {
+        "fields": [
+          "record_type",
+          "status",
+          "organization_number",
+          "company_name",
+          "change_types",
+          "changes",
+          "source_change_type",
+          "event_id",
+          "error",
+          "scraped_at"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "record_type": {
+            "label": "Row"
+          },
+          "status": {
+            "label": "Status"
+          },
+          "organization_number": {
+            "label": "Org. number"
+          },
+          "company_name": {
+            "label": "Company"
+          },
+          "change_types": {
+            "label": "Changes"
+          },
+          "changes": {
+            "label": "Before / after"
+          },
+          "source_change_type": {
+            "label": "BRREG event"
+          },
+          "event_id": {
+            "label": "Update id"
+          },
+          "error": {
+            "label": "Diagnostic"
+          },
+          "scraped_at": {
+            "label": "Observed"
+          }
+        }
+      }
+    }
+  }
+}

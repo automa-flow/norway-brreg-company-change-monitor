@@ -1,0 +1,37 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Norway Company Registry Change Monitor - BRREG output",
+  "description": "Typed BRREG changes or current records according to the selected mode, explicit diagnostic rows, and a run summary carrying the update cursor.",
+  "properties": {
+    "changes": {
+      "type": "string",
+      "title": "Changes",
+      "description": "One row per change type; the unwind omits rows with no change types, including baselines and diagnostics. Inspect RUN_SUMMARY and the full results separately.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=changes&clean=true"
+    },
+    "results": {
+      "type": "string",
+      "title": "Current / baseline records",
+      "description": "In snapshotAndChanges, one row per watched organization. changesOnly suppresses unchanged records; storeOnly can suppress the initial baseline. Diagnostic rows remain visible.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=current&clean=true"
+    },
+    "diagnostics": {
+      "type": "string",
+      "title": "Not found / partial",
+      "description": "Failure-focused columns for all rows; filter the status field client-side.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=diagnostics&clean=true"
+    },
+    "monitoring": {
+      "type": "string",
+      "title": "Monitor results and diagnostics",
+      "description": "Emitted baselines, changes and diagnostic rows without unwinding. Unchanged records may be suppressed by the selected mode.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=monitoring&clean=true"
+    },
+    "runSummary": {
+      "type": "string",
+      "title": "Run summary",
+      "description": "Cursor before and after, chunks, pages, events, changed organizations, billing and run health.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/RUN_SUMMARY"
+    }
+  }
+}

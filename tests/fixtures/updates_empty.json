@@ -1,0 +1,13 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/oppdateringer/enheter?organisasjonsnummer=923609016&oppdateringsid=25175397&sort=id,ASC&size=5"
+    }
+  },
+  "page": {
+    "size": 5,
+    "totalElements": 0,
+    "totalPages": 0,
+    "number": 0
+  }
+}
