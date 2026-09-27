@@ -13,6 +13,7 @@ After a hard crash, stop all runs for the key before removing its marker by hand
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,15 @@ import httpx
 from norway_brreg_company_change_monitor.state import state_key
 
 LOCK_QUEUE = "norway-brreg-company-change-monitor-locks"
+#: Lets a private staging twin keep its own lock queue.
+LOCK_QUEUE_ENV = "NORWAY_BRREG_LOCK_QUEUE"
+
+
+def configured_lock_queue() -> str:
+    name = os.environ.get(LOCK_QUEUE_ENV, LOCK_QUEUE).strip()
+    if not name:
+        raise ValueError(f"{LOCK_QUEUE_ENV} must not be empty")
+    return name
 
 
 class MonitorBusyError(RuntimeError):
@@ -36,8 +46,10 @@ class MonitorLock:
         queue: Any = None,
         directory: Path | None = None,
         delete_request: Callable[[str], Awaitable[None]] | None = None,
+        queue_name: str = LOCK_QUEUE,
     ) -> None:
         self.key = state_key(monitor_key)
+        self.queue_name = queue_name
         self._queue = queue
         self._directory = directory
         self._request_id: str | None = None
@@ -47,15 +59,20 @@ class MonitorLock:
     async def open(cls, monitor_key: str) -> MonitorLock:
         from apify import Actor  # noqa: PLC0415
 
+        queue_name = configured_lock_queue()
         if not Actor.configuration.is_at_home:
-            return cls(monitor_key, directory=Path(Actor.configuration.storage_dir) / LOCK_QUEUE)
+            return cls(
+                monitor_key,
+                directory=Path(Actor.configuration.storage_dir) / queue_name,
+                queue_name=queue_name,
+            )
         # In particular, NEVER retry DELETE. A lost response followed by a retry
         # could delete a new owner's marker (the request ID derives from
         # uniqueKey). The client rejects zero retries, so DELETE gets its own
         # single-attempt transport. Retrying insertion is safe: uncertainty
         # leaves the lock closed.
         client = Actor.new_client()
-        queue = await client.request_queues().get_or_create(name=LOCK_QUEUE)
+        queue = await client.request_queues().get_or_create(name=queue_name)
         api_url = Actor.configuration.api_base_url.rstrip("/")
         token = Actor.configuration.token
 
@@ -70,7 +87,12 @@ class MonitorLock:
                 )
                 response.raise_for_status()
 
-        return cls(monitor_key, queue=client.request_queue(queue.id), delete_request=delete_request)
+        return cls(
+            monitor_key,
+            queue=client.request_queue(queue.id),
+            delete_request=delete_request,
+            queue_name=queue_name,
+        )
 
     async def __aenter__(self) -> MonitorLock:
         if self._directory is not None:
@@ -92,7 +114,7 @@ class MonitorLock:
 
     def _busy(self) -> MonitorBusyError:
         return MonitorBusyError(
-            f"Monitor is locked ({LOCK_QUEUE}, uniqueKey={self.key}). "
+            f"Monitor is locked ({self.queue_name}, uniqueKey={self.key}). "
             "Retry after its active run finishes. If the owner crashed, stop all runs "
             "for this monitor before deleting only this lock marker; keep the KVS state."
         )

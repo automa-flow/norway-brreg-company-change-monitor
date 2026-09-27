@@ -19,6 +19,7 @@
     "keyValueStore": "./key_value_store_schema.json"
   },
   "readme": "./README.md",
+  "changelog": "../CHANGELOG.md",
   "usesStandbyMode": false,
   "defaultMemoryMbytes": 512,
   "minMemoryMbytes": 256,

@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from typing import Any
 
 from common.monitoring import RunMetrics
@@ -18,6 +19,9 @@ from norway_brreg_company_change_monitor.models import STATE_VERSION
 from norway_brreg_company_change_monitor.monitor import redact_patch
 
 DEFAULT_STATE_STORE = "norway-brreg-company-change-monitor-state"
+#: Lets a private staging twin keep its own state store. Under limited
+#: permissions a named store belongs to the Actor that created it.
+STATE_STORE_ENV = "NORWAY_BRREG_STATE_STORE"
 KEY_PREFIX = "BRREG_MONITOR_STATE_V1_"
 #: Leave headroom below the platform limit for each independently written record.
 MAX_STATE_BYTES = 8 * 1024 * 1024
@@ -51,6 +55,13 @@ def _delivery_chunks(rows: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
     return chunks
 
 
+def configured_state_store() -> str:
+    name = os.environ.get(STATE_STORE_ENV, DEFAULT_STATE_STORE).strip()
+    if not name:
+        raise ValueError(f"{STATE_STORE_ENV} must not be empty")
+    return name
+
+
 def state_key(monitor_key: str) -> str:
     digest = hashlib.sha256(monitor_key.encode("utf-8")).hexdigest()[:16]
     return f"{KEY_PREFIX}{digest}"
@@ -73,11 +84,11 @@ class MonitorStateStore:
         *,
         metrics: RunMetrics,
         logger: logging.Logger,
-        name: str = DEFAULT_STATE_STORE,
+        name: str | None = None,
     ) -> MonitorStateStore:
         from apify import Actor  # noqa: PLC0415 - state stays testable without SDK setup
 
-        kvs = await Actor.open_key_value_store(name=name)
+        kvs = await Actor.open_key_value_store(name=name or configured_state_store())
         return cls(kvs, metrics=metrics, logger=logger)
 
     async def load(self, monitor_key: str) -> dict[str, dict[str, Any]]:
