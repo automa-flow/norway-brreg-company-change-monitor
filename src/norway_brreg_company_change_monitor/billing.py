@@ -59,13 +59,3 @@ def affordable_targets(manager: Any) -> int | None:
     if not remaining.is_finite():
         return None
     return max(0, int(remaining // company_price))
-
-
-def billing_summary(
-    *, charged: int, price: Decimal = COMPANY_MONITORED_PRICE_USD
-) -> dict[str, Any]:
-    return {
-        "charged_companies": charged,
-        "charged_event": EVENT_COMPANY_MONITORED,
-        "charged_amount_usd": float(price * charged),
-    }

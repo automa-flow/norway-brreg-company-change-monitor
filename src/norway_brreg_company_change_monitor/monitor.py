@@ -335,7 +335,13 @@ def _disagreement(
             continue
         # Later operations win: the last one states the value the record should
         # have reached by the end of this interval.
-        stated[field] = None if operation.get("op") == "remove" else operation.get("value")
+        value = None if operation.get("op") == "remove" else operation.get("value")
+        if isinstance(value, str):
+            # Normalization stores trimmed text and no empty strings; compare the
+            # patch the same way, or a difference no record can resolve would pin
+            # the cursor for good.
+            value = value.strip() or None
+        stated[field] = value
     return tuple(
         sorted(
             field

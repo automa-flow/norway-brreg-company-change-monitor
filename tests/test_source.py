@@ -284,6 +284,17 @@ async def test_an_absent_entity_is_not_found_not_failed(source):
     assert result.error is None
 
 
+async def test_a_404_with_a_body_is_a_routing_error_not_an_absent_company(source, load_json):
+    # Measured 2026-09-27: an unknown path is a 404 with a problem+json body,
+    # an unknown organization number is a 404 with an empty body.
+    source.entities = {EQUINOR: (404, load_json("error_404_unknown_path.json"))}
+    async with client(source) as brreg:
+        result = await brreg.fetch_entity(EQUINOR)
+    assert not result.succeeded
+    assert result.state is None
+    assert result.error["code"] == "UNEXPECTED_NOT_FOUND"
+
+
 async def test_removal_from_open_data_is_its_own_state(source, load_json):
     source.entities = {"936127088": (410, load_json("entity_removed_410.json"))}
     async with client(source) as brreg:

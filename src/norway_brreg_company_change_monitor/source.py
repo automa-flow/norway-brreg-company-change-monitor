@@ -337,7 +337,9 @@ class BrregClient:
             if self.metrics is not None:
                 self.metrics.increment("bytes_downloaded", len(response.content))
             if response.status_code == 404:
-                return EntityResult(organization_number, state=EntityState.ABSENT)
+                return EntityResult(
+                    organization_number, state=_absent_state(response, organization_number)
+                )
             if response.status_code == 410:
                 return EntityResult(
                     organization_number,
@@ -417,6 +419,24 @@ def _checked(response: httpx.Response) -> httpx.Response:
         f"BRREG rejected the request with HTTP {response.status_code}"
         + (f" ({detail})." if detail else "."),
     )
+
+
+def _absent_state(response: httpx.Response, organization_number: str) -> str:
+    """Only an empty 404 is the register saying "no such organization".
+
+    Measured 2026-09-27: an unknown organization number is answered with HTTP 404
+    and an empty body, while a request the API cannot route (an unknown path) is
+    a 404 with an ``application/problem+json`` body. Reading the second as absence
+    would charge for, store and later report a company that was never checked.
+    """
+    if response.content.strip():
+        raise SourceProtocolError(
+            "UNEXPECTED_NOT_FOUND",
+            f"BRREG answered HTTP 404 with a body for {organization_number}. That is how it "
+            "reports a request it cannot route, not an unknown organization, so the company "
+            "is reported as unverified rather than absent.",
+        )
+    return EntityState.ABSENT
 
 
 def _error_detail(response: httpx.Response) -> str:

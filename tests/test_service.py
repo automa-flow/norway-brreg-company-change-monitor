@@ -188,6 +188,27 @@ async def test_a_baseline_that_is_already_removed_from_open_data_keeps_no_record
     assert stored["name"] is None
 
 
+async def test_a_removed_company_is_still_reported_as_removed_on_a_quiet_run(source, load_json):
+    # 410 (removed from open data) and 404 (no record) are different answers; a
+    # stored tombstone must not turn into NOT_FOUND once nothing new happens.
+    source.updates = [newest(500), newest(500), (200, update_page([]))]
+    source.entities = {REMOVED: (410, load_json("entity_removed_410.json"))}
+    first = await run(source, queries(REMOVED))
+    source.updates = [newest(600), (200, update_page([]))]
+    second = await run(
+        source,
+        queries(REMOVED),
+        previous_states=first.state_updates,
+        previous_cursor=first.cursor_after,
+        parsed=actor_input(mode=str(Mode.SNAPSHOT_AND_CHANGES)),
+    )
+    record = row(second, REMOVED)
+    assert record["record_type"] == str(RecordType.REMOVED)
+    assert record["status"] == str(OutputStatus.SUCCESS)
+    assert record["change_types"] == []
+    assert second.results[0].emit
+
+
 async def test_one_failed_baseline_does_not_deny_the_others_their_state(source, load_json):
     source.updates = [newest(500), newest(500), (200, update_page([]))]
     source.entities = {
@@ -480,6 +501,60 @@ async def test_pinned_cursor_does_not_repeat_a_successful_peers_source_only_even
     second = await run(
         source, queries(EQUINOR, DNB), previous_states=first.state_updates, previous_cursor=500
     )
+    assert not second.results[1].emit
+    assert second.cursor_after == 950
+    assert not any(request.url.path.endswith("/" + DNB) for request in source.requests)
+
+
+async def test_a_company_added_while_the_cursor_is_pinned_does_not_replay_older_events(
+    source, load_json, stored
+):
+    """A baseline already reflects every event up to the run's start id.
+
+    Without that acknowledgement, a company added in a run whose cursor stayed
+    pinned would have the older events replayed on the next run and report a
+    change that happened before it was ever watched.
+    """
+    dnb = load_json("entity_current.json") | {"organisasjonsnummer": DNB}
+    source.updates = [
+        newest(900),
+        newest(900),
+        (
+            200,
+            update_page(
+                [
+                    event(
+                        600, EQUINOR, changes=[{"op": "replace", "path": "/konkurs", "value": True}]
+                    )
+                ]
+            ),
+        ),
+    ]
+    source.entities = {EQUINOR: (200, load_json("entity_current.json")), DNB: (200, dnb)}
+    first = await run(source, queries(EQUINOR, DNB), previous_states=stored, previous_cursor=500)
+    assert row(first, EQUINOR)["status"] == "PARTIAL"
+    assert row(first, DNB)["record_type"] == str(RecordType.BASELINE)
+    assert first.cursor_after == 500
+    assert first.state_updates[DNB]["last_event_id"] == 900
+
+    replayed = update_page(
+        [
+            event(600, EQUINOR, changes=[{"op": "replace", "path": "/konkurs", "value": True}]),
+            event(
+                700,
+                DNB,
+                changes=[{"op": "replace", "path": "/sisteInnsendteAarsregnskap", "value": "2025"}],
+            ),
+        ]
+    )
+    source.updates = [newest(950), (200, replayed)]
+    source.entities[EQUINOR] = (200, load_json("entity_current.json") | {"konkurs": True})
+    source.requests.clear()
+    second = await run(
+        source, queries(EQUINOR, DNB), previous_states=first.state_updates, previous_cursor=500
+    )
+    assert row(second, EQUINOR)["change_types"] == [CHANGE_BANKRUPTCY]
+    assert row(second, DNB)["change_types"] == []
     assert not second.results[1].emit
     assert second.cursor_after == 950
     assert not any(request.url.path.endswith("/" + DNB) for request in source.requests)

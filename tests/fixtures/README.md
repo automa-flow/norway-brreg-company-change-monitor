@@ -10,4 +10,9 @@ organization numbers that the live update stream itself published as `Sletting`,
 the Actor never reads them, and a fixture is not the place to start collecting
 them.
 
+`error_404_unknown_path.json` was captured on 2026-09-27 with one manual request
+to a deliberately wrong path (`/enheterX/923609016`). It is the body BRREG sends
+when it cannot route a request; an unknown organization number is answered with
+the same status and an empty body.
+
 CI never touches the live source. Re-capture by running the probe manually.

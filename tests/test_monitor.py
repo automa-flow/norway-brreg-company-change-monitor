@@ -279,6 +279,16 @@ def test_a_numeric_value_matches_across_int_and_float(load_json, baseline):
     assert decision.disagreement == ()
 
 
+def test_patch_text_is_compared_the_way_the_snapshot_stores_it(load_json, baseline):
+    # The snapshot keeps trimmed text and never an empty string. A patch value that
+    # differs only in that way is the same value; flagging it would create a PARTIAL
+    # that no later record can resolve, pinning the cursor for good.
+    padded = [{"op": "replace", "path": "/navn", "value": f"  {baseline['name']} "}]
+    assert detect_changes(baseline, moved(load_json), patch=padded).disagreement == ()
+    empty = [{"op": "replace", "path": "/slettedato", "value": ""}]
+    assert detect_changes(baseline, moved(load_json), patch=empty).disagreement == ()
+
+
 def test_a_removal_operation_expects_an_absent_value(load_json, baseline):
     cleared = moved(load_json, naeringskode2=None)
     assert (

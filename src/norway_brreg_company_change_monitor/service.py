@@ -111,6 +111,10 @@ class TargetOutcome:
     error: dict[str, Any] | None = None
     #: True when the snapshot came from a fresh entity fetch in this run.
     refetched: bool = False
+    #: For a baseline: the run's start id. The record was fetched after it was
+    #: captured, so it already reflects every event up to it, and a later run
+    #: with a pinned cursor must not replay those events as new changes.
+    acknowledged_through: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,7 +197,7 @@ async def collect_outcomes(
         entities = await client.fetch_entities([q.organization_number for q in fresh])
         for query in fresh:
             outcomes[query.organization_number] = _entity_outcome(
-                entities[query.organization_number]
+                entities[query.organization_number], acknowledged_through=start_id
             )
 
     cutoff_id = await _cutoff(client, start_id) if fresh else start_id
@@ -259,7 +263,11 @@ async def collect_outcomes(
                     "RECONCILE_FAILED",
                     f"{RECONCILE_FAILED_MESSAGE} ({(result.error or {}).get('message', '')})",
                 )
-            outcomes[number] = _entity_outcome(result, refetched=True)
+            outcomes[number] = _entity_outcome(
+                result,
+                refetched=True,
+                acknowledged_through=None if number in known_numbers else start_id,
+            )
 
     for number, series in events.items():
         outcome = outcomes.get(number)
@@ -269,6 +277,7 @@ async def collect_outcomes(
                 events=tuple(series),
                 error=outcome.error,
                 refetched=outcome.refetched,
+                acknowledged_through=outcome.acknowledged_through,
             )
     for query in known:
         outcomes.setdefault(query.organization_number, TargetOutcome())
@@ -288,7 +297,9 @@ async def _cutoff(client: BrregClient, start_id: int) -> int:
     return cutoff_id
 
 
-def _entity_outcome(result: EntityResult, *, refetched: bool = False) -> TargetOutcome:
+def _entity_outcome(
+    result: EntityResult, *, refetched: bool = False, acknowledged_through: int | None = None
+) -> TargetOutcome:
     if not result.succeeded:
         return TargetOutcome(error=result.error, refetched=refetched)
     try:
@@ -298,7 +309,9 @@ def _entity_outcome(result: EntityResult, *, refetched: bool = False) -> TargetO
             error=error_record("SOURCE", "MALFORMED_ENTITY", str(exc), retryable=False),
             refetched=refetched,
         )
-    return TargetOutcome(snapshot=snapshot, refetched=refetched)
+    return TargetOutcome(
+        snapshot=snapshot, refetched=refetched, acknowledged_through=acknowledged_through
+    )
 
 
 def _snapshot_for(result: EntityResult) -> Snapshot:
@@ -480,6 +493,7 @@ def _build_row(
         patch=patch,
         actor_input=actor_input,
         observed_at=observed_at,
+        acknowledged_through=outcome.acknowledged_through,
     )
 
 
@@ -491,8 +505,16 @@ def _unchanged_row(
     observed_at: str,
 ) -> _Row:
     found = bool(previous.get("found"))
-    status = OutputStatus.SUCCESS if found else OutputStatus.NOT_FOUND
-    record_type = RecordType.SNAPSHOT if found else RecordType.NOT_FOUND
+    # A stored tombstone is a company removed from open data (HTTP 410), which
+    # stays a different answer from "no record" (HTTP 404) on every later run.
+    removed_from_open_data = not found and bool(previous.get("deleted"))
+    status = OutputStatus.SUCCESS if found or removed_from_open_data else OutputStatus.NOT_FOUND
+    if found:
+        record_type = RecordType.SNAPSHOT
+    elif removed_from_open_data:
+        record_type = RecordType.REMOVED
+    else:
+        record_type = RecordType.NOT_FOUND
     return _Row(
         record=_record(
             query,
@@ -526,8 +548,13 @@ def _observed_row(
     patch: list[dict[str, Any]],
     actor_input: ActorInput,
     observed_at: str,
+    acknowledged_through: int | None = None,
 ) -> _Row:
     partial = bool(decision.disagreement)
+    acknowledged = [
+        *([events[-1].update_id] if events else []),
+        *([acknowledged_through] if acknowledged_through is not None else []),
+    ]
     if partial:
         status = OutputStatus.PARTIAL
     elif snapshot.found or snapshot.deleted:
@@ -578,7 +605,7 @@ def _observed_row(
         if partial
         else {
             **snapshot.to_state(),
-            **({"last_event_id": events[-1].update_id} if events else {}),
+            **({"last_event_id": max(acknowledged)} if acknowledged else {}),
         },
     )
 

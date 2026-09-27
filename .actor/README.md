@@ -224,8 +224,8 @@ These are different states, and this Actor never collapses them:
 | State | Meaning |
 | --- | --- |
 | No change rows | Every watched company was checked and none moved |
-| `NOT_FOUND` | BRREG answered `404`: no record for this valid organization number |
-| `REMOVED` | BRREG answered `410 Gone`: removed from open data, cached record purged |
+| `NOT_FOUND` | BRREG answered `404` with an empty body: no record for this valid organization number. A `404` that carries an error body means BRREG could not route the request, and the company is reported as `SOURCE_FAILED` instead |
+| `REMOVED` | BRREG answered `410 Gone`: removed from open data, cached record purged. Later snapshots keep reporting it as `REMOVED` |
 | `DELETION_STATUS_CHANGED` with `deleted: true` | BRREG still publishes the company, marked deleted with a `slettedato` |
 | `SOURCE_FAILED` | The register could not be verified. No company check is charged and good state is preserved |
 | `PARTIAL` | The official patch states a value the fetched record does not show and has not moved to. Both are published even in changesOnly; the snapshot and cursor are preserved for retry |

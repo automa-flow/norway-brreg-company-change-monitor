@@ -60,9 +60,10 @@ the private repository where several Actors share them.
 ## Design rules this code keeps
 
 - **No change and could not check are different answers.** `SOURCE_FAILED`,
-  `NOT_FOUND` (HTTP 404), `REMOVED` (HTTP 410, purged from open data),
-  `PARTIAL` and `INVALID_INPUT` are separate statuses. An HTTP error never
-  becomes an empty result.
+  `NOT_FOUND` (HTTP 404 with an empty body), `REMOVED` (HTTP 410, purged from
+  open data), `PARTIAL` and `INVALID_INPUT` are separate statuses. An HTTP
+  error never becomes an empty result, and a 404 that carries an error body
+  (BRREG could not route the request) is a failure, not an absent company.
 - **A cursor never moves over an interval that was not fully read.** If any
   page of the update stream fails, the pass is abandoned with the stored
   cursor and snapshots untouched, and the next run retries the same interval.
